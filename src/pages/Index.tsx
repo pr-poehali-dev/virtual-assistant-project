@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
@@ -41,6 +41,20 @@ export default function Index() {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [activeTab, setActiveTab] = useState('chat');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   
   const [tasks] = useState<Task[]>([
     { id: '1', title: 'Напомнить о встрече в 15:00', status: 'completed', createdAt: new Date('2024-11-30T10:00:00') },
@@ -89,7 +103,8 @@ export default function Index() {
         },
         body: JSON.stringify({
           message: currentInput,
-          history: history
+          history: history,
+          online: isOnline
         })
       });
 
@@ -137,13 +152,20 @@ export default function Index() {
               <p className="text-muted-foreground mt-1">Интеллектуальный ассистент с саморазвитием</p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="animate-pulse-soft">
-                <Icon name="Wifi" className="w-3 h-3 mr-1" />
-                Online
-              </Badge>
+              {isOnline ? (
+                <Badge variant="outline" className="animate-pulse-soft">
+                  <Icon name="Wifi" className="w-3 h-3 mr-1" />
+                  Online - Обучение
+                </Badge>
+              ) : (
+                <Badge variant="destructive">
+                  <Icon name="WifiOff" className="w-3 h-3 mr-1" />
+                  Offline - Автономно
+                </Badge>
+              )}
               <Badge variant="secondary">
                 <Icon name="Brain" className="w-3 h-3 mr-1" />
-                Режим обучения
+                Саморазвитие
               </Badge>
             </div>
           </div>

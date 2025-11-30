@@ -84,17 +84,25 @@ export default function SettingsTab() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm">Автономная работа</span>
-              <Badge variant="secondary">Готов</Badge>
+              <Badge variant="secondary">Активна</Badge>
+            </div>
+            <div className="p-3 bg-accent/20 rounded-lg">
+              <p className="text-sm mb-2 font-medium">Как это работает:</p>
+              <ul className="text-xs space-y-1 text-muted-foreground">
+                <li>• В онлайн режиме помощник учится и сохраняет данные</li>
+                <li>• Все диалоги записываются в базу знаний</li>
+                <li>• Переводы кэшируются для оффлайн доступа</li>
+                <li>• Без интернета используются накопленные знания</li>
+              </ul>
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Объем кэша знаний</label>
-              <Progress value={67} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-1">3.2 GB из 4.8 GB</p>
+              <label className="text-sm font-medium mb-2 block">База знаний</label>
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span>Накопленные данные</span>
+                <span className="text-primary font-medium">Растёт автоматически</span>
+              </div>
+              <Progress value={100} className="h-2" />
             </div>
-            <Button variant="outline" className="w-full">
-              <Icon name="Download" className="w-4 h-4 mr-2" />
-              Загрузить дополнительные знания
-            </Button>
           </div>
         </Card>
       </div>
