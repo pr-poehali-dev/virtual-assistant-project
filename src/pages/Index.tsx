@@ -61,7 +61,7 @@ export default function Index() {
     uptime: '12 дней'
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: Message = {
@@ -72,19 +72,57 @@ export default function Index() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const assistantMessage: Message = {
+    try {
+      const history = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      const response = await fetch('https://functions.poehali.dev/f83a722f-e8be-4fff-b8e0-7f1058c35190', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentInput,
+          history: history
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.message) {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.message,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.error || 'Извините, произошла ошибка при обработке вашего сообщения. Проверьте, что добавлен OPENAI_API_KEY в секреты проекта.',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
+    } catch (error) {
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Понял вас! Выполняю задачу и запоминаю паттерн для будущего автономного использования. Эти данные будут доступны даже в оффлайн режиме.',
+        content: 'Не удалось связаться с сервером. Проверьте подключение к интернету.',
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (

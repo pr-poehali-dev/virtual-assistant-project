@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "Test chat endpoint with message",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": "Привет! Как дела?",
+        "history": []
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "message": "string",
+        "request_id": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test OPTIONS for CORS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Test without message",
+      "method": "POST",
+      "path": "/",
+      "body": {},
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "Message is required"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
